@@ -1,0 +1,62 @@
+Welcome to the Tie::Hash::Easy README. :)
+
+  The Tie::Hash::Easy module is meant to be a simple method to create tied
+hashes. It does that by not requiring a programmer to actually create a
+new class. You can just pass a hash containing the names of the tied hash
+access functions as the keys, and sub-refs to the functions to be called
+as the values. This greatly simplifies the creation of tied hashes.
+
+  I also took the liberty to add a little syntactic sugar by allowing you
+to choose to override a new function called KEYS(), instead of overriding
+FIRSTKEY() and NEXTKEY(). All you have to do to override KEYS() is return 
+an array-ref to a list of keys to be returned when iterating through the
+tied hash. Please read the example below to see how to all works.
+
+  In the Tie::Hash::Easy man-page, I took the effort to create an entire
+example program to illustrate how everything tied together. Since I went
+through so much effort, I might as well paste it here too.
+
+  The following code snippet creates a ordered hash. The first element
+created is the first element listed when you iterate through the hash.
+
+$hash = new Tie::Hash::Easy {
+    STORE =>
+        sub {
+            my($self, $key, $value) = @_;
+
+            push @{$$self{'order'}}, $key;
+            $$self{'hash'}{$key} = $value;
+        },
+    DELETE =>
+        sub {
+            my($self, $key) = @_;
+
+            delete $$self{'hash'}{$key};
+            my $i;
+            for($i = 0; $i < @{$$self{'order'}}; $i++) {
+                splice @{$$self{'order'}}, $i, 1
+                    if $$self{'order'}[$i] eq $key;
+            }
+        },
+    KEYS =>
+        sub {
+            my $self = shift;
+
+            return [ @{$$self{'order'}} ];
+        }
+};
+
+That probably could've been commented better. :)
+Intimate knowledge of the perltie(1) man-page is required.
+
+Hopefully this module will be of use to someone other than me. I'm not
+holding my breath, though.
+
+<LEGALESE>
+
+Copyright (C) 1997 Ashley Winters <jql@accessone.com>. All rights reserved.
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+</LEGALESE>

@@ -1,0 +1,14 @@
+Changes
+Easy.pm
+INSTALL
+MANIFEST
+Makefile.PL
+README
+t/clear.t
+t/delete.t
+t/destroy.t
+t/exists.t
+t/fetch.t
+t/keys.t
+t/new.t
+t/store.t
